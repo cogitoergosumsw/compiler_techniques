@@ -1,2 +1,2 @@
-# compiler_techniques
+# Compiler Techniques
 Creating compiler related source code 
