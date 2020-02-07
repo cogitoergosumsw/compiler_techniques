@@ -41,7 +41,8 @@ import static frontend.Token.Type.*;
 
 /* This definition may come in handy. If you wish, you can add more definitions here. */
 WhiteSpace = [ ] | \t | \f | \n | \r
-
+Letter = [a-zA-Z]
+Digit = [0-9]
 
 %%
 /* put in your rules here.    */
@@ -84,6 +85,18 @@ WhiteSpace = [ ] | \t | \f | \n | \r
 "!=" { return token(NEQ); }
 "+"	{ return token(PLUS); }
 "*"	{ return token(TIMES); }
+
+// Identifier
+({Letter})({Letter}|{Digit}|"_")*       { return token(ID, yytext()); }
+
+// Integer Literal
+{Digit}+                                { return token(INT_LITERAL, yytext()); }
+
+// String Literal
+\"[^\"\n]*\"                            { return token(STRING_LITERAL, yytext()); }
+
+// Whitespace
+{WhiteSpace}*                           {}
 
 /* You don't need to change anything below this line. */
 .							{ throw new Error("unexpected character '" + yytext() + "'"); }
