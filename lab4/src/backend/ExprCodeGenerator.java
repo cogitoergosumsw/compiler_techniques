@@ -98,14 +98,16 @@ public class ExprCodeGenerator extends Visitor<Value> {
 	@Override
 	public Value visitIntLiteral(IntLiteral nd) {
 		/* TODO: return something meaningful here */
-		return null;
+		IntConstant intValue = IntConstant.v(nd.getValue());
+		return intValue;
 	}
 	
 	/** Generate code for a string literal. */
 	@Override
 	public Value visitStringLiteral(StringLiteral nd) {
 		/* TODO: return something meaningful here */
-		return null;
+		StringConstant stringLiteral = StringConstant.v(nd.getValue());
+		return stringLiteral;
 	}
 	
 	/** Generate code for a Boolean literal. */
@@ -113,7 +115,11 @@ public class ExprCodeGenerator extends Visitor<Value> {
 	public Value visitBooleanLiteral(BooleanLiteral nd) {
 		/* TODO: return something meaningful here (hint: translate 'true' to integer
 		 *       constant 1, 'false' to integer constant 0) */
-		return null;
+		if (nd.getValue() == true) {
+			return IntConstant.v(1);
+		} else {
+			return IntConstant.v(0);
+		}
 	}
 	
 	/** Generate code for an array literal. */
@@ -134,7 +140,12 @@ public class ExprCodeGenerator extends Visitor<Value> {
 	@Override
 	public Value visitArrayIndex(ArrayIndex nd) {
 		/* TODO: generate code for array index */
-		return null;
+		Value base = wrap(nd.getBase().accept(this));
+		Value index = wrap(nd.getIndex().accept(this));
+		
+		Value arrayIndex = Jimple.v().newArrayRef(base, index);
+		
+		return arrayIndex;
 	}
 	
 	/** Generate code for a variable name. */
@@ -159,7 +170,37 @@ public class ExprCodeGenerator extends Visitor<Value> {
 		 *       generate code in the more specialised visitor methods visitAddExpr,
 		 *       visitSubExpr, etc., instead
 		 */
-		return null;
+		final Value leftVal = wrap(nd.getLeft().accept(this));
+		final Value rightVal = wrap(nd.getRight().accept(this));
+		
+		Visitor<Value> binaryExprVisitor = new Visitor<Value>(){
+			@Override
+			public Value visitAddExpr(AddExpr nd) {
+				return Jimple.v().newAddExpr(leftVal,rightVal);
+			}
+			
+			@Override
+			public Value visitSubExpr(SubExpr nd) {
+				return Jimple.v().newSubExpr(leftVal,rightVal);
+			}
+			
+			@Override
+			public Value visitMulExpr(MulExpr nd) {
+				return Jimple.v().newMulExpr(leftVal, rightVal);
+			}
+			
+			@Override
+			public Value visitDivExpr(DivExpr nd) {
+				return Jimple.v().newDivExpr(leftVal, rightVal);
+			}
+			
+			@Override
+			public Value visitModExpr(ModExpr nd) {
+				return Jimple.v().newRemExpr(leftVal, rightVal);
+			}
+		};
+		Value res = nd.accept(binaryExprVisitor);
+		return res;
 	}
 	
 	/** Generate code for a comparison expression. */
@@ -207,7 +248,8 @@ public class ExprCodeGenerator extends Visitor<Value> {
 	@Override
 	public Value visitNegExpr(NegExpr nd) {
 		/* TODO: generate code for negation expression */
-		return null;
+		Value negVal = wrap(nd.getOperand().accept(this));
+		return Jimple.v().newNegExpr(negVal);
 	}
 	
 	/** Generate code for a function call. */
