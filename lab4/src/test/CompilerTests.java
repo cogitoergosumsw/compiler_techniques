@@ -134,4 +134,58 @@ public class CompilerTests {
 				new Object[0],
 				42);
 	}
+	
+	@Test public void testSubtraction() {
+		runtest("module Test {" +
+				"  public int f() {" +
+				"    return 23-19;" +
+				"  }" +
+				"}",
+				"Test",
+				"f",
+				new Class<?>[0],
+				new Object[0],
+				4);
+	}
+	
+	@Test public void testMultiply() {
+		runtest("module Test {" +
+				"  public int f() {" +
+				"    return 23*19;" +
+				"  }" +
+				"}",
+				"Test",
+				"f",
+				new Class<?>[0],
+				new Object[0],
+				437);
+	}
+	
+	@Test public void testDivide() {
+		runtest("module Test {" +
+				"  public int f() {" +
+				"    return 4/1;" +
+				"  }" +
+				"}",
+				"Test",
+				"f",
+				new Class<?>[0],
+				new Object[0],
+				4);
+	}
+	
+	@Test public void testMod() {
+		runtest("module Test {" +
+				"  public int f() {" +
+				"    return 23%10;" +
+				"  }" +
+				"}",
+				"Test",
+				"f",
+				new Class<?>[0],
+				new Object[0],
+				3);
+	}
+	
+	
 }
